@@ -1,5 +1,6 @@
 appnope==0.1.0
 attrs==19.3.0
+audiolazy==0.6
 backcall==0.1.0
 bleach==3.1.0
 certifi==2019.11.28
@@ -35,11 +36,14 @@ ptyprocess==0.6.0
 Pygments==2.5.2
 pyrsistent==0.15.7
 python-dateutil==2.8.1
+python-dotenv==0.12.0
 pyzmq==18.1.1
 qtconsole==4.6.0
+QtPy==1.9.0
 requests==2.22.0
 Send2Trash==1.5.0
 six==1.14.0
+spotipy==2.10.0
 terminado==0.8.3
 testpath==0.4.4
 tornado==6.0.3

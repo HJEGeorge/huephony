@@ -12,3 +12,4 @@ All settings should be stored in the .env file in the settings directory. They s
 
 Reading:
 [CIE 1931 colorimetry](https://medium.com/hipster-color-science/a-beginners-guide-to-colorimetry-401f1830b65a)
+[Spotify-viz](https://github.com/zachwinter/spotify-viz/)

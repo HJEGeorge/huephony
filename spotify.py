@@ -30,5 +30,5 @@ if __name__ == "__main__":
     print(res)
 
     # Change track
-    sp.start_playback(uris=['spotify:track:6gdLoMygLsgktydTQ71b15'])
+    sp.start_playback(uris=['spotify:track:1pKYYY0dkg23sQQXi0Q5zN'])
 

@@ -87,13 +87,20 @@ if __name__ == "__main__":
     print(f"Playing {song['name']} by {artists}")
     analysis = sp.audio_analysis(song['uri'])
     beats = analysis['beats']
+    pre_call = time.perf_counter()
     sp.start_playback(uris=[song['uri']])
+    post_call = time.perf_counter()
+    difference = post_call - pre_call
     FUDGE_FACTOR = 0.05
-    time.sleep(max(analysis['track'].get('end_of_fade_in', 0.4) - FUDGE_FACTOR, 0))
+    time.sleep(max(analysis['track'].get('end_of_fade_in', 0) - difference - FUDGE_FACTOR, 0))
     print("Boogie time")
     for beat in beats:
+        pre_call = time.perf_counter()
         light.hue = next(colours)
-        time.sleep(beat['duration'])
+        post_call = time.perf_counter()
+        difference = post_call - pre_call
+        print(difference)
+        time.sleep(beat['duration'] - difference)
 
 
 

@@ -7,14 +7,12 @@ from spotipy.oauth2 import SpotifyClientCredentials, SpotifyOAuth
 
 import settings.settings as settings
 
-
 import requests
 from phue import Bridge
 
-#%%
+# %%
 
 from datatypes.datatypes import Hue, Brightness, ColorTemp
-
 
 if __name__ == "__main__":
     # sp = spotipy.Spotify(
@@ -28,20 +26,21 @@ if __name__ == "__main__":
     scope = "user-read-playback-state,user-modify-playback-state"
     sp = spotipy.Spotify(
         client_credentials_manager=
-            SpotifyOAuth(
-                scope=scope,
-                client_id=settings.SPOTIFY['client_id'],
-                client_secret=settings.SPOTIFY['client_secret'],
-                redirect_uri='http://localhost:8080/callback',
-                username='hjegeorge@gmail.com'
-            )
+        SpotifyOAuth(
+            scope=scope,
+            client_id=settings.SPOTIFY['client_id'],
+            client_secret=settings.SPOTIFY['client_secret'],
+            redirect_uri='http://localhost:8080/callback',
+            username='hjegeorge@gmail.com'
+        )
     )
     print("Authentication complete :)")
 
     devices_response = sp.devices()
     print('Connected Spotify Devices:')
     for device in devices_response['devices']:
-        print(f"{device['name']} ({device['type']}), Volume: {device['volume_percent']}%, Active: {device['is_active']}")
+        print(
+            f"{device['name']} ({device['type']}), Volume: {device['volume_percent']}%, Active: {device['is_active']}")
     if not devices_response['devices']:
         print('Could not find any devices, please open Spotify on at least one device')
 
@@ -58,7 +57,7 @@ if __name__ == "__main__":
         print("Connection to Hue Bridge successful :)")
     else:
         print("connection to Hue unsuccessful, please try pressing the button on your bridge.")
-    
+
     time.sleep(1)
     print("Let's boogie")
 
@@ -70,7 +69,6 @@ if __name__ == "__main__":
     if not lights.keys():
         print('Turn yo fuckin lights on you rookie')
 
-
     choice = input(f"Which light you wanna boogie wiv? (Enter the name) (default: {key})")
 
     light = lights[choice or key]
@@ -78,7 +76,8 @@ if __name__ == "__main__":
     colours = cycle([Hue.BLUE.value, Hue.RED.value])
     light.transitiontime = 0
 
-    song_query = input("Which song you wanna boogie to? (will choose the closest match) (default: Daft Punk - Around the World)")
+    song_query = input(
+        "Which song you wanna boogie to? (will choose the closest match) (default: Daft Punk - Around the World)")
     if not song_query:
         song_query = "Daft Punk Around the world"
     song = sp.search(q=song_query, limit=1)['tracks']['items'][0]
@@ -87,21 +86,18 @@ if __name__ == "__main__":
     print(f"Playing {song['name']} by {artists}")
     analysis = sp.audio_analysis(song['uri'])
     beats = analysis['beats']
-    pre_call = time.perf_counter()
-    sp.start_playback(uris=[song['uri']])
-    post_call = time.perf_counter()
-    difference = post_call - pre_call
+    song_start = time.perf_counter()
+
     FUDGE_FACTOR = 0.05
-    time.sleep(max(analysis['track'].get('end_of_fade_in', 0) - difference - FUDGE_FACTOR, 0))
+    def song_time():
+        return time.perf_counter() - song_start + FUDGE_FACTOR
+
+    sp.start_playback(uris=[song['uri']])
+    time.sleep(max(analysis['track'].get('end_of_fade_in', 0) - song_time(), 0))
     print("Boogie time")
     for beat in beats:
-        pre_call = time.perf_counter()
+        if song_time() < beat['start']:
+            print(f"song at: {song_time()}, beat starting at {beat['start']}")
+            print(f"sleeping for {beat['start'] - song_time()}")
+            time.sleep(max(beat['start'] - song_time(), 0))
         light.hue = next(colours)
-        post_call = time.perf_counter()
-        difference = post_call - pre_call
-        print(difference)
-        time.sleep(beat['duration'] - difference)
-
-
-
-
